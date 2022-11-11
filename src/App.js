@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import Navbar from './component/navbar/Navbar';
+import Products from './component/products/Products'
 
 function App() {
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([])
+  const baseUrl = 'https://fakestoreapi.com/products';
+
+  const getProducts = () => {
+    axios
+    .get(baseUrl)
+    .then((res)=>{
+      console.log(res.data);
+      setProducts(res.data);
+    })
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+  
+  const handleAddProducts= (product, quantity) =>{
+    const isAdded=cart.some((item)=> item.id===product.id)
+    !isAdded && setCart([...cart,{...product,quantity}]);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navbar totalProduct={cart?.length}/>
+      <Products products={products} handleAddProducts={handleAddProducts}/>
     </div>
   );
 }
